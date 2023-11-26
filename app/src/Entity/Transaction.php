@@ -12,7 +12,7 @@ class Transaction
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
-    private int $id = 0;
+    private ?int $id = null;
 
     #[ORM\ManyToOne(inversedBy: 'outgoingTransactions')]
     private ?Account $source = null;
@@ -40,7 +40,7 @@ class Transaction
         $this->date = new \DateTime();
     }
 
-    public function getId(): int
+    public function getId(): ?int
     {
         return $this->id;
     }

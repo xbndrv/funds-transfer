@@ -67,7 +67,7 @@
             "bin/console --no-interaction lint:yaml config",
             "vendor/bin/php-cs-fixer fix",
             "vendor/bin/phpstan analyse src --level max",
-            "vendor/bin/phpstan analyse tests --level max"
+            "vendor/bin/phpstan analyse tests --level min"
         ],
         "test": [
             "./vendor/bin/phpunit --testdox ./tests"

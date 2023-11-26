@@ -1,55 +1,45 @@
 <?php
 
+namespace App\Tests;
+
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 
 class TransactionsListTest extends WebTestCase
 {
-    use \App\Tests\TestTrait;
+    use TestTrait;
 
-    public function testNoAccountError(): void
+    public function testNoAccountProvidedError(): void
     {
-        $client = static::createClient();
-        $client->request(
+        $httpClient = static::createClient();
+        $httpClient->request(
             'GET',
             $this->getRouter()->generate('app_account_transactions')
         );
-        $response = $client->getResponse();
-
-        $this->assertResponseIsSuccessful();
-        $json = json_decode((string) $response->getContent(), true);
-        $this->assertIsArray($json);
-        $this->assertFalse($json['success'] ?? 'unset');
-        $this->assertArrayHasKey('message', $json);
+        $this->assertErrorApiResponse($httpClient->getResponse());
     }
 
     public function testAccountNotExistError(): void
     {
-        $client = static::createClient();
-        $client->request(
+        $httpClient = static::createClient();
+        $httpClient->request(
             'GET',
             $this->getRouter()->generate('app_account_transactions'),
             ['account' => 0]
         );
-        $response = $client->getResponse();
-
-        $this->assertResponseIsSuccessful();
-        $json = json_decode((string) $response->getContent(), true);
-        $this->assertIsArray($json);
-        $this->assertFalse($json['success'] ?? 'unset');
-        $this->assertArrayHasKey('message', $json);
+        $this->assertErrorApiResponse($httpClient->getResponse());
     }
 
-    public function testEmptyAccount(): void
+    public function testAccountWithNoTransactions(): void
     {
-        $client = static::createClient();
-        $clientEntity = $this->createClientEntity();
-        $account = $this->createAccountEntity($clientEntity, 'XXX');
-        $client->request(
+        $httpClient = static::createClient();
+        $client = $this->createClientEntity();
+        $account = $this->createAccountEntity($client, 'XXX');
+        $httpClient->request(
             'GET',
             $this->getRouter()->generate('app_account_transactions'),
             ['account' => $account->getId()]
         );
-        $response = $client->getResponse();
+        $response = $httpClient->getResponse();
 
         $this->assertResponseIsSuccessful();
         $json = json_decode((string) $response->getContent(), true);
@@ -57,33 +47,30 @@ class TransactionsListTest extends WebTestCase
         $this->assertTrue($json['success'] ?? 0);
         $this->assertEquals($account->getId(), $json['account']['id'] ?? 'undefined');
         $this->assertEquals('XXX', $json['account']['currency'] ?? 'undefined');
-        $this->assertEquals($clientEntity->getId(), $json['client']['id'] ?? 'undefined');
+        $this->assertEquals($client->getId(), $json['client']['id'] ?? 'undefined');
         $this->assertCount(0, $json['transactions'] ?? ['xxx']);
     }
 
-    public function testClientAccountsList(): void
+    public function testIncomingAndOutgoingTransactions(): void
     {
-        $client = static::createClient();
-        $clientEntity = $this->createClientEntity();
-        $account1 = $this->createAccountEntity($clientEntity, 'USD', 1000);
-        $account2 = $this->createAccountEntity($clientEntity, 'USD', 1000);
-        $transaction1 = $this->createTransactionEntity($account1, $account2, 'USD', 1000);
-        $transaction2 = $this->createTransactionEntity($account2, $account1, 'USD', 1000);
+        $httpClient = static::createClient();
 
-        $client->request(
+        $client = $this->createClientEntity();
+        $account1 = $this->createAccountEntity($client, 'USD', 1000);
+        $account2 = $this->createAccountEntity($client, 'USD', 1000);
+        $this->createTransactionEntity($account1, $account2, 'USD', 1000);
+        $this->createTransactionEntity($account2, $account1, 'USD', 1000);
+
+        $httpClient->request(
             'GET',
             $this->getRouter()->generate('app_account_transactions'),
             ['account' => $account1->getId()]
         );
-        $response = $client->getResponse();
 
-        $this->assertResponseIsSuccessful();
-        $json = json_decode((string) $response->getContent(), true);
-        $this->assertIsArray($json);
-        $this->assertTrue($json['success'] ?? 0);
+        $json = $this->assertSuccessApiResponseAndReturnJson($httpClient->getResponse());
         $this->assertEquals($account1->getId(), $json['account']['id'] ?? 'undefined');
         $this->assertEquals('USD', $json['account']['currency'] ?? 'undefined');
-        $this->assertEquals($clientEntity->getId(), $json['client']['id'] ?? 'undefined');
+        $this->assertEquals($client->getId(), $json['client']['id'] ?? 'undefined');
         $this->assertCount(2, $json['transactions'] ?? []);
         $this->assertEquals(
             $account2->getId(),
@@ -100,6 +87,31 @@ class TransactionsListTest extends WebTestCase
         $this->assertEquals(
             -1000,
             $json['transactions'][1]['amount'] ?? 'undefined'
+        );
+    }
+
+    public function testTransactionsPagination(): void
+    {
+        $httpClient = static::createClient();
+
+        $client = $this->createClientEntity();
+        $source = $this->createAccountEntity($client, 'USD', 100000000);
+        $target = $this->createAccountEntity($client, 'USD', 0);
+        for ($i = 100; $i <= 300; ++$i) {
+            $this->createTransactionEntity($source, $target, 'USD', $i);
+        }
+
+        $httpClient->request(
+            'GET',
+            $this->getRouter()->generate('app_account_transactions'),
+            ['account' => $target->getId(), 'limit' => 5, 'offset' => 3]
+        );
+
+        $json = $this->assertSuccessApiResponseAndReturnJson($httpClient->getResponse());
+        $this->assertCount(5, $json['transactions'] ?? []);
+        $this->assertEquals(
+            297,
+            $json['transactions'][0]['amount'] ?? 'undefined'
         );
     }
 }

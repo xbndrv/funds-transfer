@@ -13,7 +13,7 @@ class Client
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
-    private int $id = 0;
+    private ?int $id = null;
 
     #[ORM\Column(length: 64, options: ['default' => ''])]
     private string $name = '';
@@ -26,7 +26,7 @@ class Client
         $this->accounts = new ArrayCollection();
     }
 
-    public function getId(): int
+    public function getId(): ?int
     {
         return $this->id;
     }

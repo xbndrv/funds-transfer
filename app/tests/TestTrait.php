@@ -5,8 +5,10 @@ namespace App\Tests;
 use App\Entity\Account;
 use App\Entity\Client;
 use App\Entity\Transaction;
+use App\Service\CurrencyConverter;
 use App\Service\TransactionFactory;
 use Doctrine\ORM\EntityManagerInterface;
+use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\RouterInterface;
 
 trait TestTrait
@@ -41,6 +43,16 @@ trait TestTrait
         return $router;
     }
 
+    protected function getCurrencyConverter(): CurrencyConverter
+    {
+        $converter = self::getContainer()->get(CurrencyConverter::class);
+        if (!$converter instanceof CurrencyConverter) {
+            throw new \Exception('No CurrencyConverter');
+        }
+
+        return $converter;
+    }
+
     protected function createClientEntity(): Client
     {
         static $clientNo;
@@ -68,7 +80,7 @@ trait TestTrait
         return $account;
     }
 
-    protected function createTransactionEntity(Account $source, Account $target, string $currency = 'USD', int $amount = 100): Transaction
+    protected function createTransactionEntity(Account $source, Account $target, string $currency, int $amount): Transaction
     {
         $transaction = new Transaction();
         $transaction->setSourceAmount($amount);
@@ -81,5 +93,27 @@ trait TestTrait
         $this->getEntityManager()->flush();
 
         return $transaction;
+    }
+
+    protected function assertErrorApiResponse(Response $response): void
+    {
+        $this->assertResponseIsSuccessful();
+        $json = json_decode((string) $response->getContent(), true);
+        $this->assertIsArray($json);
+        $this->assertFalse($json['success'] ?? 'unset');
+        $this->assertArrayHasKey('message', $json);
+    }
+
+    /**
+     * @return array<mixed>
+     */
+    protected function assertSuccessApiResponseAndReturnJson(Response $response): array
+    {
+        $this->assertResponseIsSuccessful();
+        $json = json_decode((string) $response->getContent(), true);
+        $this->assertIsArray($json);
+        $this->assertTrue($json['success'] ?? 0);
+
+        return $json;
     }
 }

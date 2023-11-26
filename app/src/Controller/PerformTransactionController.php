@@ -87,6 +87,8 @@ class PerformTransactionController extends AbstractController
                 ],
             ]);
         } catch (TransactionException $exception) {
+            $connection->rollBack();
+
             return $this->createErrorResponse($exception->getMessage());
         }
     }
