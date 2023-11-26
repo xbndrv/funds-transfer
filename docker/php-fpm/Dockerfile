@@ -11,12 +11,11 @@ RUN apt-get install -y libicu-dev \
     && docker-php-ext-install intl
 
 RUN curl -sS https://getcomposer.org/installer -o composer-setup.php
-RUN export COMPOSER_ALLOW_SUPERUSER=1
 RUN php composer-setup.php --install-dir=/usr/local/bin --filename=composer
 RUN rm -rf composer-setup.php
 
 COPY ../../app /app
 
-RUN composer install --no-interaction --no-dev
-
 WORKDIR /app
+RUN export COMPOSER_ALLOW_SUPERUSER=1
+RUN composer install --no-interaction --no-dev
