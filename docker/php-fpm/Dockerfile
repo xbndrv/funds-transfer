@@ -17,4 +17,4 @@ RUN rm -rf composer-setup.php
 COPY ../../app /app
 
 WORKDIR /app
-RUN composer install --no-interaction --no-dev
+RUN composer install --no-interaction --no-dev --no-plugins
