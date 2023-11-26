@@ -16,7 +16,7 @@ git pull origin main
 
 # building production docker image funds_transfer
 # based on php-fpm
-sudo ./build-prod.sh
+sudo ./build.sh
 
 # building funds_transfer_db container based on postgres,
 # funds_transfer container based on funds_transfer image
