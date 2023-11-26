@@ -28,10 +28,10 @@ class PerformTransactionController extends AbstractController
 
     public function __invoke(Request $request): Response
     {
-        $sourceAccountId = $request->query->get('from');
-        $targetAccountId = $request->query->get('to');
-        $currency = $request->query->get('currency');
-        $amount = $request->query->get('amount');
+        $sourceAccountId = $request->request->get('from');
+        $targetAccountId = $request->request->get('to');
+        $currency = $request->request->get('currency');
+        $amount = $request->request->get('amount');
 
         if (is_null($sourceAccountId)) {
             return $this->createErrorResponse('No source account ID provided. Set \'from\' POST parameter.');
@@ -49,7 +49,6 @@ class PerformTransactionController extends AbstractController
         $this->exchangeRateUpdater->updateRatesIfNecessary();
 
         $connection = $this->entityManager->getConnection();
-        $connection->setAutoCommit(false);
         $connection->beginTransaction();
 
         try {

@@ -48,5 +48,7 @@ class TransactionPerformer
         $this->entityManager->persist($transaction);
         $this->entityManager->persist($source);
         $this->entityManager->persist($target);
+
+        $this->entityManager->flush();
     }
 }

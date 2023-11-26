@@ -9,7 +9,7 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 
-#[Route('/accounts', name: 'app_accounts')]
+#[Route('/client-accounts', name: 'app_client_accounts')]
 class ClientAccountsListController extends AbstractController
 {
     use ErrorTrait;
