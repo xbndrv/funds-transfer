@@ -2,7 +2,7 @@ version: "3.6"
 
 services:
   db:
-    container_name: "test_task_db"
+    container_name: "funds_transfer_db"
     restart: unless-stopped
     image: postgres:13.0-alpine
     volumes:
@@ -15,27 +15,26 @@ services:
       PGTZ: "GMT+2"
 
   php:
-    container_name: "test_task_php"
+    container_name: "funds_transfer"
     restart: unless-stopped
-    build:
-      context: .
-      dockerfile: docker/php-fpm/Dockerfile
+    image: funds_transfer
     depends_on:
       - db
     volumes:
       - "./app:/app/"
     environment:
+      - APP_ENV=dev
       - DATABASE_URL=pgsql://user:password@db/db
       - EXCHANGE_RATE_ACCESS_KEY=874ee5f710b4651907839ac809ca9c2f
       - EXCHANGE_RATE_CACHE_LIFE_TIME_SECONDS=3600
 
   nginx:
-    container_name: "test_task_nginx"
+    container_name: "funds_transfer_nginx"
     restart: unless-stopped
     build:
       context: docker/nginx
     ports:
-      - "8087:80"
+      - "8088:80"
     depends_on:
       - php
 
