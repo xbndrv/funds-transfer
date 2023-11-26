@@ -17,5 +17,4 @@ RUN rm -rf composer-setup.php
 COPY ../../app /app
 
 WORKDIR /app
-RUN export COMPOSER_ALLOW_SUPERUSER=1
 RUN composer install --no-interaction --no-dev
