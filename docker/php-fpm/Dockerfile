@@ -1,10 +1,10 @@
 FROM php:8.2-fpm
 
 ENV APP_ENV="prod"
+ENV COMPOSER_ALLOW_SUPERUSER=1
 
 RUN apt-get update
 RUN apt-get install -y libpq-dev libzip-dev zip
-RUN apt-get install -y cron
 RUN apt-get install -y git
 RUN docker-php-ext-install pdo pdo_pgsql zip
 RUN apt-get install -y libicu-dev \
