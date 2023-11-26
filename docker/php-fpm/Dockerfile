@@ -1,7 +1,5 @@
 FROM php:8.2-fpm
 
-ENV APP_ENV="prod"
-
 RUN apt-get update
 RUN apt-get install -y libpq-dev libzip-dev zip
 RUN apt-get install -y git

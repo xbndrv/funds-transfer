@@ -14,8 +14,7 @@ git init
 git remote add origin https://github.com/xbndrv/funds-transfer
 git pull origin main
 
-# building production docker image funds_transfer
-# based on php-fpm
+# building docker image funds_transfer based on php-fpm
 sudo ./build.sh
 
 # building funds_transfer_db container based on postgres,
@@ -28,8 +27,8 @@ sudo docker compose up -d
 sudo docker exec funds_transfer composer install
 
 # Running migrations and fixtures
-sudo docker exec funds_transfer bin/console doctrine:migrations:migrate
-sudo docker exec funds_transfer bin/console doctrine:fixture:load
+sudo docker exec funds_transfer bin/console --no-interaction doctrine:migrations:migrate
+sudo docker exec funds_transfer bin/console --no-interaction doctrine:fixture:load
 ```
 
 Then open http://localhost:8088/ with a browser or Postman.
@@ -76,8 +75,8 @@ GRANT ALL PRIVILEGES ON DATABASE db_test TO "user";
 quit;
 exit 
 
-sudo docker exec funds_transfer bin/console --env=test doctrine:migrations:migrate
-sudo docker exec funds_transfer bin/console --env=test doctrine:fixtures:load
+sudo docker exec funds_transfer bin/console --no-interaction --env=test doctrine:migrations:migrate
+sudo docker exec funds_transfer bin/console --no-interaction --env=test doctrine:fixtures:load
 ```
 
 Running tests:
