@@ -1,0 +1,132 @@
+{
+	"info": {
+		"_postman_id": "5c884391-4f06-4316-808a-b84278175653",
+		"name": "test-task",
+		"schema": "https://schema.getpostman.com/json/collection/v2.0.0/collection.json",
+		"_exporter_id": "31408439"
+	},
+	"item": [
+		{
+			"name": "Index",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": "http://localhost:8088/"
+			},
+			"response": []
+		},
+		{
+			"name": "Clients list",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:8088/clients?offset=200&limit=10",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8088",
+					"path": [
+						"clients"
+					],
+					"query": [
+						{
+							"key": "offset",
+							"value": "200"
+						},
+						{
+							"key": "limit",
+							"value": "10"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Client's accounts",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:8088/client-accounts?client=11",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8088",
+					"path": [
+						"client-accounts"
+					],
+					"query": [
+						{
+							"key": "client",
+							"value": "11"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Account's transactions",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:8088/account-transactions?account=101",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8088",
+					"path": [
+						"account-transactions"
+					],
+					"query": [
+						{
+							"key": "account",
+							"value": "101"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Transfer funds",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "formdata",
+					"formdata": [
+						{
+							"key": "from",
+							"value": "102",
+							"type": "text"
+						},
+						{
+							"key": "to",
+							"value": "104",
+							"type": "text"
+						},
+						{
+							"key": "amount",
+							"value": "666",
+							"type": "text"
+						},
+						{
+							"key": "currency",
+							"value": "USD",
+							"type": "text"
+						}
+					]
+				},
+				"url": "http://localhost:8088/transfer"
+			},
+			"response": []
+		}
+	]
+}

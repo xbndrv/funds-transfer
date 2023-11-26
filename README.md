@@ -33,6 +33,9 @@ sudo docker exec funds_transfer bin/console --no-interaction doctrine:fixture:lo
 
 Then open http://localhost:8088/ with a browser or Postman.
 
+The repository contains postman.json file with Postman collection
+to import.
+
 ## API Endpoints:
 
 `GET /` - list of endpoints.
