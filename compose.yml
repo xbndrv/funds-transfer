@@ -1,0 +1,43 @@
+version: "3.6"
+
+services:
+  db:
+    container_name: "test_task_db"
+    restart: unless-stopped
+    image: postgres:13.0-alpine
+    volumes:
+      - "db:/var/lib/postgresql/data"
+    environment:
+      POSTGRES_DB: db
+      POSTGRES_USER: user
+      POSTGRES_PASSWORD: password
+      TZ: "GMT+2"
+      PGTZ: "GMT+2"
+
+  php:
+    container_name: "test_task_php"
+    restart: unless-stopped
+    build:
+      context: .
+      dockerfile: docker/php-fpm/Dockerfile
+    depends_on:
+      - db
+    volumes:
+      - "./app:/app/"
+    environment:
+      - DATABASE_URL=pgsql://user:password@db/db
+      - EXCHANGE_RATE_ACCESS_KEY=874ee5f710b4651907839ac809ca9c2f
+      - EXCHANGE_RATE_CACHE_LIFE_TIME_SECONDS=3600
+
+  nginx:
+    container_name: "test_task_nginx"
+    restart: unless-stopped
+    build:
+      context: docker/nginx
+    ports:
+      - "8087:80"
+    depends_on:
+      - php
+
+volumes:
+  db:

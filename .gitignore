@@ -1,0 +1,5 @@
+*/.DS_store
+/app/vendor
+/app/var
+/app/.php-cs-fixer.cache
+/.idea
